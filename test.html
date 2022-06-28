@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <img src="" alt="">
+    <script>
+    
+        const BASE_URL = "https://study.duyiedu.com"; //常量一般全部大写
+        const data = {
+            content: '要抱抱',
+            loginId: "854518408@qq.com",
+            loginPwd: "ws19981116",
+            nickname: '铁咩'
+        }
+
+        async function ajax(method = "GET", path, data, param = '') {
+            const headers = {
+                "Content-Type": "application/json"
+            }
+            let url;
+            if (localStorage.getItem('token')) {
+                headers.authorization = `Bearer ${localStorage.getItem('token')}`
+            }
+            if (param) {
+                url = `${BASE_URL}${path}?${param}`;
+            } else {
+                url = BASE_URL + path;
+            }
+            if (method === "GET") {
+                return fetch(url, {
+                    headers
+                }).then(resp => resp.json())
+            }
+            if (method === "POST") {
+                const paramObj = {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(data)
+                }
+                if (path === "/api/user/login") {
+                    const resp = await fetch(url, paramObj);
+                    const result = await resp.json();
+                    if (result.coed === 0) {
+                        localStorage.setItem('token', resp.headers.get('Authorization'))
+                    }
+                    return result
+                } else {
+                    console.log('进如了这里')
+                    console.log(url)
+                    return fetch(url, paramObj).then(resp => resp.json())
+                }
+
+            }
+        }
+
+
+        const resp = fetch('https://study.duyiedu.com/api/movies?page=10&size=20').then(resp => resp.json())
+        resp.then(data => console.log(data))
+
+        
+    </script>
+</body>
+
+</html>
